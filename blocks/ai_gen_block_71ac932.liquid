@@ -1,0 +1,254 @@
+{% doc %}
+  @prompt
+    large text effect filled with an image
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-image-text-effect-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: {{ block.settings.text_alignment }};
+    align-items: center;
+    padding: {{ block.settings.padding }}px 0;
+    overflow: hidden;
+  }
+
+  .ai-image-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    line-height: {{ block.settings.line_height }};
+    letter-spacing: {{ block.settings.letter_spacing }}px;
+    margin:0;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-size: {{ block.settings.background_size }};
+    background-position: {{ block.settings.background_position }};
+    background-repeat: no-repeat;
+    {% if block.settings.text_transform %}
+      text-transform: uppercase;
+    {% endif %}
+  }
+
+  .ai-image-text-fallback-{{ ai_gen_id }} {
+    color: {{ block.settings.fallback_color }};}
+
+  @media screen and (max-width: 749px) {
+    .ai-image-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size_mobile }}px;
+    }
+  }
+
+  @supports not (background-clip: text) {
+    .ai-image-text-{{ ai_gen_id }} {
+      color: {{ block.settings.fallback_color }};
+    }
+  }
+{% endstyle %}<div class="ai-image-text-effect-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.fill_image %}
+    <h1
+      class="ai-image-text-{{ ai_gen_id }}"
+      style="background-image: url('{{ block.settings.fill_image | image_url: width: 2000 }}');"
+    >
+      {{ block.settings.text }}
+    </h1>
+  {% else %}
+    <h1 class="ai-image-text-{{ ai_gen_id }} ai-image-text-fallback-{{ ai_gen_id }}">
+      {{ block.settings.text }}
+    </h1>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Image Text Effect",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "AMAZING"
+    },
+    {
+      "type": "image_picker",
+      "id": "fill_image",
+      "label": "Fill image"
+    },
+    {
+      "type": "color",
+      "id": "fallback_color",
+      "label": "Fallback text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Font size",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "min": 30,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Font size mobile",
+      "default": 60
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ],
+      "default": "900"
+    },
+    {
+      "type": "range",
+      "id": "line_height",
+      "min": 0.8,
+      "max": 1.5,
+      "step": 0.1,
+      "label": "Line height",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "min": -5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 2
+    },
+    {
+      "type": "checkbox",
+      "id": "text_transform",
+      "label": "Uppercase text",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "select",
+      "id": "background_size",
+      "label": "Image size",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        },
+        {
+          "value": "100% 100%",
+          "label": "Stretch"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "background_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "top center",
+          "label": "Top"
+        },
+        {
+          "value": "bottom center",
+          "label": "Bottom"
+        },
+        {
+          "value": "left center",
+          "label": "Left"
+        },
+        {
+          "value": "right center",
+          "label": "Right"
+        }
+      ],
+      "default": "center center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Text Effect"
+    }
+  ]
+}
+{% endschema %}

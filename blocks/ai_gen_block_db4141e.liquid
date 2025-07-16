@@ -1,0 +1,312 @@
+{% doc %}
+  @prompt
+    Create a large text effect where the text letters are filled with a background image. The text should be bold and prominent, with CSS that allows an image to show through the text letters using background-clip or mask properties. Include options to customize the text content, font size, and background image.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-image-text-container-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: {{ block.settings.text_alignment }};
+    align-items: center;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px;
+    min-height: 200px;
+  }
+
+  .ai-image-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.font_size }}px;
+    font-weight:900;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: {{ block.settings.letter_spacing }}px;
+    margin: 0;
+    {% if block.settings.background_image %}
+      background-image: url('{{ block.settings.background_image | image_url: width: 2000 }}');{% else %}
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+    {% endif %}
+    background-size: {{ block.settings.background_size }};
+    background-position: {{ block.settings.background_position }};
+    background-repeat: no-repeat;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-attachment: {{ block.settings.background_attachment }};
+    {% if block.settings.enable_stroke %}
+      -webkit-text-stroke: {{ block.settings.stroke_width }}px {{ block.settings.stroke_color }};
+    {% endif %}
+  }
+
+  .ai-image-text-fallback-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  @supports not (background-clip: text) and not (-webkit-background-clip: text) {
+    .ai-image-text-{{ ai_gen_id }} {
+      display: none;
+    }
+    .ai-image-text-fallback-{{ ai_gen_id }} {
+      display: block;font-size: {{ block.settings.font_size }}px;
+      font-weight: 900;
+      line-height: 0.9;
+      text-transform: uppercase;
+      letter-spacing: {{ block.settings.letter_spacing }}px;
+      margin: 0;
+      color: {{ block.settings.fallback_color }};{% if block.settings.enable_stroke %}
+        -webkit-text-stroke: {{ block.settings.stroke_width }}px {{ block.settings.stroke_color }};
+      {% endif %}
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-image-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.7 }}px;letter-spacing: {{ block.settings.letter_spacing | times: 0.7 }}px;
+    }
+    .ai-image-text-fallback-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | times: 0.7 }}px;
+      letter-spacing: {{ block.settings.letter_spacing | times: 0.7 }}px;
+    }
+    
+    .ai-image-text-container-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px {{ block.settings.padding_bottom | times: 0.7 }}px;
+    }
+  }
+{% endstyle %}<div class="ai-image-text-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.text_content != blank %}
+    <h1 class="ai-image-text-{{ ai_gen_id }}">
+      {{ block.settings.text_content }}
+    </h1>
+    <h1 class="ai-image-text-fallback-{{ ai_gen_id }}">
+      {{ block.settings.text_content }}
+    </h1>
+  {% else %}
+    <h1 class="ai-image-text-{{ ai_gen_id }}">
+      Your Text Here
+    </h1>
+    <h1 class="ai-image-text-fallback-{{ ai_gen_id }}">
+      Your Text Here
+    </h1>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Image Fill Text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "text_content",
+      "label": "Text content",
+      "default": "BOLD TEXT"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Font size",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "min": -5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Background Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "select",
+      "id": "background_size",
+      "label": "Background size",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        },
+        {
+          "value": "100% 100%",
+          "label": "Stretch"
+        },
+        {
+          "value": "auto",
+          "label": "Original size"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "background_position",
+      "label": "Background position",
+      "options": [
+        {
+          "value": "center center",
+          "label": "Center"
+        },
+        {
+          "value": "top center",
+          "label": "Top"
+        },
+        {
+          "value": "bottom center",
+          "label": "Bottom"
+        },
+        {
+          "value": "left center",
+          "label": "Left"
+        },
+        {
+          "value": "right center",
+          "label": "Right"
+        },
+        {
+          "value": "top left",
+          "label": "Top left"
+        },
+        {
+          "value": "top right",
+          "label": "Top right"
+        },
+        {
+          "value": "bottom left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom right",
+          "label": "Bottom right"
+        }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "select",
+      "id": "background_attachment",
+      "label": "Background attachment",
+      "options": [
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed"
+        }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "header",
+      "content": "Text Stroke"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_stroke",
+      "label": "Enable text stroke",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Stroke width",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "stroke_color",
+      "label": "Stroke color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Fallback & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "fallback_color",
+      "label": "Fallback text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Fill Text"
+    }
+  ]
+}
+{% endschema %}
