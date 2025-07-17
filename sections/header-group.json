@@ -88,8 +88,8 @@
             "heading_2": "",
             "show_vendor": false,
             "show_price": true,
-            "tab_target_1": "",
-            "tab_target_link_1": "",
+            "tab_target_1": "Products",
+            "tab_target_link_1": "shopify://collections/safety-products",
             "tab_products_1": [
               "strauto-emergency-jump-starter-with-air-compressor",
               "the-universal-inflator"
